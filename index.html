@@ -1,0 +1,746 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GreenField Farm Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .fade-in { animation: fadeIn 0.3s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .farm-pattern { background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-purple-100 via-pink-50 to-indigo-100 min-h-screen">
+    <!-- Login Screen -->
+    <div id="login-screen" class="min-h-screen flex items-center justify-center farm-pattern gradient-bg">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
+            <div class="text-center mb-8">
+                <div class="w-20 h-20 bg-gradient-to-r from-green-400 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span class="text-white font-bold text-3xl">🌾</span>
+                </div>
+                <h1 class="text-3xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">GreenField Farm</h1>
+                <p class="text-gray-600 mt-2">Secure Farm Management System</p>
+            </div>
+            
+            <form id="login-form" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Username</label>
+                    <input type="text" id="username" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                    <input type="password" id="password" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all">
+                </div>
+                <button type="submit" class="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-3 px-4 rounded-xl hover:from-purple-700 hover:to-blue-700 transition-all font-medium shadow-lg">
+                    Sign In
+                </button>
+            </form>
+            
+            <div class="mt-6 p-4 bg-gradient-to-r from-green-50 to-blue-50 rounded-xl">
+                <p class="text-sm text-gray-600 font-medium mb-2">Demo Credentials:</p>
+                <p class="text-xs text-gray-500">Username: <span class="font-mono bg-white px-2 py-1 rounded">farmer</span></p>
+                <p class="text-xs text-gray-500">Password: <span class="font-mono bg-white px-2 py-1 rounded">harvest2024</span></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="main-app" class="hidden">
+        <!-- Header -->
+        <header class="bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 shadow-lg">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-12 h-12 bg-white bg-opacity-20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+                            <span class="text-white font-bold text-xl">🌾</span>
+                        </div>
+                        <div>
+                            <h1 class="text-2xl font-bold text-white">GreenField Farm</h1>
+                            <p class="text-emerald-100 text-sm">Welcome back, <span id="user-name">Farmer</span>!</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="text-emerald-100 text-sm">
+                            <span id="currentDate"></span>
+                        </div>
+                        <button onclick="logout()" class="bg-white bg-opacity-20 text-white px-4 py-2 rounded-lg hover:bg-opacity-30 transition-all backdrop-blur-sm">
+                            Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="bg-white shadow-sm border-b-2 border-gradient-to-r from-purple-200 to-pink-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex space-x-8">
+                    <button onclick="showSection('crops')" class="nav-btn py-4 px-3 border-b-3 border-emerald-500 text-emerald-600 font-medium bg-emerald-50 rounded-t-lg">
+                        🌱 Crops
+                    </button>
+                    <button onclick="showSection('livestock')" class="nav-btn py-4 px-3 border-b-3 border-transparent text-gray-500 hover:text-purple-600 hover:bg-purple-50 rounded-t-lg font-medium transition-all">
+                        🐄 Livestock
+                    </button>
+                    <button onclick="showSection('activities')" class="nav-btn py-4 px-3 border-b-3 border-transparent text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-t-lg font-medium transition-all">
+                        📋 Activities
+                    </button>
+                    <button onclick="showSection('reports')" class="nav-btn py-4 px-3 border-b-3 border-transparent text-gray-500 hover:text-pink-600 hover:bg-pink-50 rounded-t-lg font-medium transition-all">
+                        📊 Reports
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <!-- Crops Section -->
+            <div id="crops-section" class="section">
+                <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl shadow-lg p-6 mb-6 border border-green-200">
+                    <h2 class="text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-4">🌱 Add New Crop</h2>
+                    <form id="crop-form" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-green-700 mb-2">Crop Name</label>
+                            <input type="text" id="crop-name" required class="w-full px-4 py-3 border-2 border-green-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-green-700 mb-2">Field Location</label>
+                            <input type="text" id="crop-location" required class="w-full px-4 py-3 border-2 border-green-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-green-700 mb-2">Planting Date</label>
+                            <input type="date" id="crop-date" required class="w-full px-4 py-3 border-2 border-green-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-green-700 mb-2">Area (acres)</label>
+                            <input type="number" id="crop-area" step="0.1" min="0" required class="w-full px-4 py-3 border-2 border-green-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-green-700 mb-2">Status</label>
+                            <select id="crop-status" required class="w-full px-4 py-3 border-2 border-green-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all">
+                                <option value="">Select Status</option>
+                                <option value="Planted">🌱 Planted</option>
+                                <option value="Growing">🌿 Growing</option>
+                                <option value="Ready to Harvest">🌾 Ready to Harvest</option>
+                                <option value="Harvested">✅ Harvested</option>
+                            </select>
+                        </div>
+                        <div class="flex items-end">
+                            <button type="submit" class="w-full bg-gradient-to-r from-green-500 to-emerald-500 text-white py-3 px-4 rounded-xl hover:from-green-600 hover:to-emerald-600 transition-all font-medium shadow-lg">
+                                ➕ Add Crop
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-200">
+                    <h2 class="text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-4">🌾 Crop Inventory</h2>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="border-b-2 border-gradient-to-r from-green-200 to-emerald-200">
+                                    <th class="text-left py-4 px-4 font-semibold text-green-700">Crop</th>
+                                    <th class="text-left py-4 px-4 font-semibold text-green-700">Location</th>
+                                    <th class="text-left py-4 px-4 font-semibold text-green-700">Date Planted</th>
+                                    <th class="text-left py-4 px-4 font-semibold text-green-700">Area</th>
+                                    <th class="text-left py-4 px-4 font-semibold text-green-700">Status</th>
+                                    <th class="text-left py-4 px-4 font-semibold text-green-700">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="crops-table">
+                                <!-- Crops will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Livestock Section -->
+            <div id="livestock-section" class="section hidden">
+                <div class="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl shadow-lg p-6 mb-6 border border-blue-200">
+                    <h2 class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">🐄 Add New Livestock</h2>
+                    <form id="livestock-form" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-blue-700 mb-2">Animal Type</label>
+                            <select id="animal-type" required class="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                                <option value="">Select Type</option>
+                                <option value="Cattle">🐄 Cattle</option>
+                                <option value="Sheep">🐑 Sheep</option>
+                                <option value="Goats">🐐 Goats</option>
+                                <option value="Pigs">🐷 Pigs</option>
+                                <option value="Chickens">🐔 Chickens</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-blue-700 mb-2">Animal ID</label>
+                            <input type="text" id="animal-id" required class="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-blue-700 mb-2">Age (months)</label>
+                            <input type="number" id="animal-age" min="0" required class="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-blue-700 mb-2">Weight (lbs)</label>
+                            <input type="number" id="animal-weight" min="0" step="0.1" class="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-blue-700 mb-2">Health Status</label>
+                            <select id="animal-health" required class="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                                <option value="">Select Status</option>
+                                <option value="Healthy">💚 Healthy</option>
+                                <option value="Under Treatment">🟡 Under Treatment</option>
+                                <option value="Quarantined">🔴 Quarantined</option>
+                            </select>
+                        </div>
+                        <div class="flex items-end">
+                            <button type="submit" class="w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white py-3 px-4 rounded-xl hover:from-blue-600 hover:to-purple-600 transition-all font-medium shadow-lg">
+                                ➕ Add Animal
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-200">
+                    <h2 class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">🐾 Livestock Inventory</h2>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="border-b-2 border-gradient-to-r from-blue-200 to-purple-200">
+                                    <th class="text-left py-4 px-4 font-semibold text-blue-700">Type</th>
+                                    <th class="text-left py-4 px-4 font-semibold text-blue-700">ID</th>
+                                    <th class="text-left py-4 px-4 font-semibold text-blue-700">Age</th>
+                                    <th class="text-left py-4 px-4 font-semibold text-blue-700">Weight</th>
+                                    <th class="text-left py-4 px-4 font-semibold text-blue-700">Health</th>
+                                    <th class="text-left py-4 px-4 font-semibold text-blue-700">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="livestock-table">
+                                <!-- Livestock will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Activities Section -->
+            <div id="activities-section" class="section hidden">
+                <div class="bg-gradient-to-br from-orange-50 to-pink-50 rounded-2xl shadow-lg p-6 mb-6 border border-orange-200">
+                    <h2 class="text-2xl font-bold bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent mb-4">📋 Log Farm Activity</h2>
+                    <form id="activity-form" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-orange-700 mb-2">Activity Type</label>
+                            <select id="activity-type" required class="w-full px-4 py-3 border-2 border-orange-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all">
+                                <option value="">Select Activity</option>
+                                <option value="Planting">🌱 Planting</option>
+                                <option value="Watering">💧 Watering</option>
+                                <option value="Fertilizing">🌿 Fertilizing</option>
+                                <option value="Harvesting">🌾 Harvesting</option>
+                                <option value="Feeding">🥕 Feeding</option>
+                                <option value="Veterinary Care">🏥 Veterinary Care</option>
+                                <option value="Maintenance">🔧 Maintenance</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-orange-700 mb-2">Date</label>
+                            <input type="date" id="activity-date" required class="w-full px-4 py-3 border-2 border-orange-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-orange-700 mb-2">Description</label>
+                            <textarea id="activity-description" rows="3" required class="w-full px-4 py-3 border-2 border-orange-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-orange-700 mb-2">Cost ($)</label>
+                            <input type="number" id="activity-cost" step="0.01" min="0" class="w-full px-4 py-3 border-2 border-orange-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all">
+                        </div>
+                        <div class="flex items-end">
+                            <button type="submit" class="w-full bg-gradient-to-r from-orange-500 to-pink-500 text-white py-3 px-4 rounded-xl hover:from-orange-600 hover:to-pink-600 transition-all font-medium shadow-lg">
+                                📝 Log Activity
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-200">
+                    <h2 class="text-2xl font-bold bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent mb-4">📅 Recent Activities</h2>
+                    <div class="space-y-4" id="activities-list">
+                        <!-- Activities will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reports Section -->
+            <div id="reports-section" class="section hidden">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <div class="bg-gradient-to-br from-green-400 to-emerald-500 rounded-2xl shadow-lg p-6 text-white">
+                        <div class="flex items-center">
+                            <div class="w-16 h-16 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
+                                <span class="text-3xl">🌱</span>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-green-100 font-medium">Total Crops</p>
+                                <p class="text-3xl font-bold" id="total-crops">0</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-br from-blue-400 to-purple-500 rounded-2xl shadow-lg p-6 text-white">
+                        <div class="flex items-center">
+                            <div class="w-16 h-16 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
+                                <span class="text-3xl">🐄</span>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-blue-100 font-medium">Total Livestock</p>
+                                <p class="text-3xl font-bold" id="total-livestock">0</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-br from-orange-400 to-pink-500 rounded-2xl shadow-lg p-6 text-white">
+                        <div class="flex items-center">
+                            <div class="w-16 h-16 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
+                                <span class="text-3xl">📋</span>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-orange-100 font-medium">Activities This Month</p>
+                                <p class="text-3xl font-bold" id="monthly-activities">0</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-200">
+                    <h2 class="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-6">📊 Farm Summary</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-6 border border-green-200">
+                            <h3 class="text-lg font-semibold text-green-700 mb-4">🌾 Crop Status Distribution</h3>
+                            <div id="crop-status-chart" class="space-y-3">
+                                <!-- Chart will be populated here -->
+                            </div>
+                        </div>
+                        <div class="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6 border border-blue-200">
+                            <h3 class="text-lg font-semibold text-blue-700 mb-4">🏥 Livestock Health Status</h3>
+                            <div id="livestock-health-chart" class="space-y-3">
+                                <!-- Chart will be populated here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Authentication system
+        const validCredentials = {
+            'farmer': 'harvest2024',
+            'admin': 'farm123',
+            'manager': 'crops2024'
+        };
+
+        let currentUser = null;
+
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (validCredentials[username] && validCredentials[username] === password) {
+                currentUser = username;
+                document.getElementById('user-name').textContent = username.charAt(0).toUpperCase() + username.slice(1);
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('main-app').classList.remove('hidden');
+                showNotification('Welcome back! Login successful! 🎉', 'success');
+            } else {
+                showNotification('Invalid credentials. Please try again! ❌', 'error');
+            }
+        });
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                currentUser = null;
+                document.getElementById('login-screen').classList.remove('hidden');
+                document.getElementById('main-app').classList.add('hidden');
+                document.getElementById('login-form').reset();
+                showNotification('Logged out successfully! 👋', 'success');
+            }
+        }
+
+        // Database simulation using localStorage
+        class FarmDatabase {
+            constructor() {
+                this.crops = JSON.parse(localStorage.getItem('farm_crops') || '[]');
+                this.livestock = JSON.parse(localStorage.getItem('farm_livestock') || '[]');
+                this.activities = JSON.parse(localStorage.getItem('farm_activities') || '[]');
+            }
+
+            // Data validation
+            validateCrop(crop) {
+                const required = ['name', 'location', 'date', 'area', 'status'];
+                for (let field of required) {
+                    if (!crop[field] || crop[field].toString().trim() === '') {
+                        throw new Error(`${field} is required`);
+                    }
+                }
+                if (crop.area <= 0) throw new Error('Area must be greater than 0');
+                return true;
+            }
+
+            validateLivestock(animal) {
+                const required = ['type', 'id', 'age', 'health'];
+                for (let field of required) {
+                    if (!animal[field] || animal[field].toString().trim() === '') {
+                        throw new Error(`${field} is required`);
+                    }
+                }
+                if (animal.age < 0) throw new Error('Age cannot be negative');
+                // Check for duplicate IDs
+                if (this.livestock.some(a => a.id === animal.id)) {
+                    throw new Error('Animal ID already exists');
+                }
+                return true;
+            }
+
+            validateActivity(activity) {
+                const required = ['type', 'date', 'description'];
+                for (let field of required) {
+                    if (!activity[field] || activity[field].toString().trim() === '') {
+                        throw new Error(`${field} is required`);
+                    }
+                }
+                return true;
+            }
+
+            // CRUD operations
+            addCrop(crop) {
+                this.validateCrop(crop);
+                crop.id = Date.now();
+                crop.addedBy = currentUser;
+                this.crops.push(crop);
+                this.save();
+                return crop;
+            }
+
+            addLivestock(animal) {
+                this.validateLivestock(animal);
+                animal.dbId = Date.now();
+                animal.addedBy = currentUser;
+                this.livestock.push(animal);
+                this.save();
+                return animal;
+            }
+
+            addActivity(activity) {
+                this.validateActivity(activity);
+                activity.id = Date.now();
+                activity.addedBy = currentUser;
+                this.activities.push(activity);
+                this.save();
+                return activity;
+            }
+
+            deleteCrop(id) {
+                this.crops = this.crops.filter(c => c.id !== id);
+                this.save();
+            }
+
+            deleteLivestock(id) {
+                this.livestock = this.livestock.filter(a => a.dbId !== id);
+                this.save();
+            }
+
+            save() {
+                localStorage.setItem('farm_crops', JSON.stringify(this.crops));
+                localStorage.setItem('farm_livestock', JSON.stringify(this.livestock));
+                localStorage.setItem('farm_activities', JSON.stringify(this.activities));
+            }
+        }
+
+        const db = new FarmDatabase();
+
+        // UI Functions
+        function showSection(section) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(s => s.classList.add('hidden'));
+            // Show selected section
+            document.getElementById(section + '-section').classList.remove('hidden');
+            document.getElementById(section + '-section').classList.add('fade-in');
+            
+            // Update navigation
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('border-emerald-500', 'text-emerald-600', 'bg-emerald-50');
+                btn.classList.remove('border-purple-500', 'text-purple-600', 'bg-purple-50');
+                btn.classList.remove('border-blue-500', 'text-blue-600', 'bg-blue-50');
+                btn.classList.remove('border-pink-500', 'text-pink-600', 'bg-pink-50');
+                btn.classList.add('border-transparent', 'text-gray-500');
+            });
+            
+            const colors = {
+                'crops': ['border-emerald-500', 'text-emerald-600', 'bg-emerald-50'],
+                'livestock': ['border-purple-500', 'text-purple-600', 'bg-purple-50'],
+                'activities': ['border-blue-500', 'text-blue-600', 'bg-blue-50'],
+                'reports': ['border-pink-500', 'text-pink-600', 'bg-pink-50']
+            };
+            
+            event.target.classList.add(...colors[section]);
+            event.target.classList.remove('border-transparent', 'text-gray-500');
+
+            // Update reports if viewing reports section
+            if (section === 'reports') {
+                updateReports();
+            }
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            const bgColor = type === 'success' ? 'bg-gradient-to-r from-green-500 to-emerald-500' : 'bg-gradient-to-r from-red-500 to-pink-500';
+            notification.className = `fixed top-4 right-4 p-4 rounded-xl shadow-2xl z-50 ${bgColor} text-white font-medium`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 4000);
+        }
+
+        // Form handlers
+        document.getElementById('crop-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            try {
+                const crop = {
+                    name: document.getElementById('crop-name').value,
+                    location: document.getElementById('crop-location').value,
+                    date: document.getElementById('crop-date').value,
+                    area: parseFloat(document.getElementById('crop-area').value),
+                    status: document.getElementById('crop-status').value
+                };
+                
+                db.addCrop(crop);
+                this.reset();
+                renderCrops();
+                showNotification('🌱 Crop added successfully!', 'success');
+            } catch (error) {
+                showNotification('❌ ' + error.message, 'error');
+            }
+        });
+
+        document.getElementById('livestock-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            try {
+                const animal = {
+                    type: document.getElementById('animal-type').value,
+                    id: document.getElementById('animal-id').value,
+                    age: parseInt(document.getElementById('animal-age').value),
+                    weight: parseFloat(document.getElementById('animal-weight').value) || 0,
+                    health: document.getElementById('animal-health').value
+                };
+                
+                db.addLivestock(animal);
+                this.reset();
+                renderLivestock();
+                showNotification('🐄 Animal added successfully!', 'success');
+            } catch (error) {
+                showNotification('❌ ' + error.message, 'error');
+            }
+        });
+
+        document.getElementById('activity-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            try {
+                const activity = {
+                    type: document.getElementById('activity-type').value,
+                    date: document.getElementById('activity-date').value,
+                    description: document.getElementById('activity-description').value,
+                    cost: parseFloat(document.getElementById('activity-cost').value) || 0
+                };
+                
+                db.addActivity(activity);
+                this.reset();
+                renderActivities();
+                showNotification('📋 Activity logged successfully!', 'success');
+            } catch (error) {
+                showNotification('❌ ' + error.message, 'error');
+            }
+        });
+
+        // Render functions
+        function renderCrops() {
+            const tbody = document.getElementById('crops-table');
+            tbody.innerHTML = '';
+            
+            db.crops.forEach(crop => {
+                const row = document.createElement('tr');
+                row.className = 'border-b border-gray-100 hover:bg-gradient-to-r hover:from-green-50 hover:to-emerald-50 transition-all';
+                row.innerHTML = `
+                    <td class="py-4 px-4 font-medium">${crop.name}</td>
+                    <td class="py-4 px-4">${crop.location}</td>
+                    <td class="py-4 px-4">${crop.date}</td>
+                    <td class="py-4 px-4">${crop.area} acres</td>
+                    <td class="py-4 px-4">
+                        <span class="px-3 py-1 text-sm rounded-full font-medium ${getStatusColor(crop.status)}">
+                            ${crop.status}
+                        </span>
+                    </td>
+                    <td class="py-4 px-4">
+                        <button onclick="deleteCrop(${crop.id})" class="bg-gradient-to-r from-red-500 to-pink-500 text-white px-3 py-1 rounded-lg hover:from-red-600 hover:to-pink-600 transition-all text-sm">
+                            🗑️ Delete
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function renderLivestock() {
+            const tbody = document.getElementById('livestock-table');
+            tbody.innerHTML = '';
+            
+            db.livestock.forEach(animal => {
+                const row = document.createElement('tr');
+                row.className = 'border-b border-gray-100 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 transition-all';
+                row.innerHTML = `
+                    <td class="py-4 px-4 font-medium">${animal.type}</td>
+                    <td class="py-4 px-4">${animal.id}</td>
+                    <td class="py-4 px-4">${animal.age} months</td>
+                    <td class="py-4 px-4">${animal.weight || 'N/A'} lbs</td>
+                    <td class="py-4 px-4">
+                        <span class="px-3 py-1 text-sm rounded-full font-medium ${getHealthColor(animal.health)}">
+                            ${animal.health}
+                        </span>
+                    </td>
+                    <td class="py-4 px-4">
+                        <button onclick="deleteLivestock(${animal.dbId})" class="bg-gradient-to-r from-red-500 to-pink-500 text-white px-3 py-1 rounded-lg hover:from-red-600 hover:to-pink-600 transition-all text-sm">
+                            🗑️ Delete
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function renderActivities() {
+            const container = document.getElementById('activities-list');
+            container.innerHTML = '';
+            
+            const sortedActivities = db.activities.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            sortedActivities.slice(0, 10).forEach(activity => {
+                const div = document.createElement('div');
+                div.className = 'bg-gradient-to-r from-orange-50 to-pink-50 border-2 border-orange-200 rounded-xl p-4 hover:shadow-lg transition-all';
+                div.innerHTML = `
+                    <div class="flex justify-between items-start mb-2">
+                        <h4 class="font-semibold text-orange-700">${activity.type}</h4>
+                        <span class="text-sm text-orange-600 bg-white px-2 py-1 rounded-lg">${activity.date}</span>
+                    </div>
+                    <p class="text-gray-700 text-sm mb-2">${activity.description}</p>
+                    <div class="flex justify-between items-center">
+                        ${activity.cost > 0 ? `<p class="text-sm text-green-600 font-semibold bg-green-100 px-2 py-1 rounded-lg">💰 Cost: $${activity.cost.toFixed(2)}</p>` : '<div></div>'}
+                        <p class="text-xs text-gray-500">Added by: ${activity.addedBy}</p>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function updateReports() {
+            document.getElementById('total-crops').textContent = db.crops.length;
+            document.getElementById('total-livestock').textContent = db.livestock.length;
+            
+            const currentMonth = new Date().getMonth();
+            const monthlyActivities = db.activities.filter(a => 
+                new Date(a.date).getMonth() === currentMonth
+            ).length;
+            document.getElementById('monthly-activities').textContent = monthlyActivities;
+
+            // Crop status chart
+            const cropStatusChart = document.getElementById('crop-status-chart');
+            const statusCounts = {};
+            db.crops.forEach(crop => {
+                statusCounts[crop.status] = (statusCounts[crop.status] || 0) + 1;
+            });
+            
+            cropStatusChart.innerHTML = '';
+            Object.entries(statusCounts).forEach(([status, count]) => {
+                const div = document.createElement('div');
+                div.className = 'flex justify-between items-center bg-white p-3 rounded-lg border border-green-200';
+                div.innerHTML = `
+                    <span class="text-sm text-green-700 font-medium">${status}</span>
+                    <span class="font-bold text-green-600 bg-green-100 px-2 py-1 rounded-lg">${count}</span>
+                `;
+                cropStatusChart.appendChild(div);
+            });
+
+            // Livestock health chart
+            const healthChart = document.getElementById('livestock-health-chart');
+            const healthCounts = {};
+            db.livestock.forEach(animal => {
+                healthCounts[animal.health] = (healthCounts[animal.health] || 0) + 1;
+            });
+            
+            healthChart.innerHTML = '';
+            Object.entries(healthCounts).forEach(([health, count]) => {
+                const div = document.createElement('div');
+                div.className = 'flex justify-between items-center bg-white p-3 rounded-lg border border-blue-200';
+                div.innerHTML = `
+                    <span class="text-sm text-blue-700 font-medium">${health}</span>
+                    <span class="font-bold text-blue-600 bg-blue-100 px-2 py-1 rounded-lg">${count}</span>
+                `;
+                healthChart.appendChild(div);
+            });
+        }
+
+        // Helper functions
+        function getStatusColor(status) {
+            const colors = {
+                'Planted': 'bg-blue-100 text-blue-800 border border-blue-200',
+                'Growing': 'bg-yellow-100 text-yellow-800 border border-yellow-200',
+                'Ready to Harvest': 'bg-orange-100 text-orange-800 border border-orange-200',
+                'Harvested': 'bg-green-100 text-green-800 border border-green-200'
+            };
+            return colors[status] || 'bg-gray-100 text-gray-800 border border-gray-200';
+        }
+
+        function getHealthColor(health) {
+            const colors = {
+                'Healthy': 'bg-green-100 text-green-800 border border-green-200',
+                'Under Treatment': 'bg-yellow-100 text-yellow-800 border border-yellow-200',
+                'Quarantined': 'bg-red-100 text-red-800 border border-red-200'
+            };
+            return colors[health] || 'bg-gray-100 text-gray-800 border border-gray-200';
+        }
+
+        function deleteCrop(id) {
+            if (confirm('🗑️ Are you sure you want to delete this crop?')) {
+                db.deleteCrop(id);
+                renderCrops();
+                showNotification('🌱 Crop deleted successfully!', 'success');
+            }
+        }
+
+        function deleteLivestock(id) {
+            if (confirm('🗑️ Are you sure you want to delete this animal?')) {
+                db.deleteLivestock(id);
+                renderLivestock();
+                showNotification('🐄 Animal deleted successfully!', 'success');
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set current date
+            document.getElementById('currentDate').textContent = new Date().toLocaleDateString();
+            
+            // Set default dates
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('crop-date').value = today;
+            document.getElementById('activity-date').value = today;
+            
+            // Render initial data
+            renderCrops();
+            renderLivestock();
+            renderActivities();
+        });
+    </script>
+</body>
+</html>
